@@ -6,6 +6,7 @@ import {
   Validators,
   FormControl,
 } from '@angular/forms';
+import { PaymentService } from '../../services/payment.service';
 
 @Component({
   selector: 'app-payments',
@@ -16,7 +17,10 @@ export class PaymentsComponent implements OnInit {
   paymantForm: FormGroup;
   minDate: string;
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(
+    private formBuilder: FormBuilder,
+    private paymentService: PaymentService
+  ) {}
 
   ngOnInit(): void {
     this.paymantForm = this.formBuilder.group({
@@ -119,7 +123,22 @@ export class PaymentsComponent implements OnInit {
     this.paymantForm.markAllAsTouched();
 
     if (this.paymantForm.valid) {
-      console.log(123);
+      const body: Paymant = {
+        creditCardNumber: this.paymantForm.get('creditCardNumber').value,
+        cardholder: this.paymantForm.get('cardHolder').value,
+        expirationDate: new Date(this.paymantForm.get('expirationDate').value),
+        securityCode: this.paymantForm.get('securityCode').value,
+        amount: this.paymantForm.get('amount').value,
+      };
+
+      this.paymentService.submitPayment(body).subscribe(
+        (data) => {
+          console.log(data);
+        },
+        (error) => {
+          console.error(error);
+        }
+      );
     }
   }
 }

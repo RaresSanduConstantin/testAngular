@@ -5,3 +5,7 @@ export interface Paymant {
   securityCode?: string;
   amount: number;
 }
+
+export interface RaspunsPostPaymant {
+  message: string;
+}
