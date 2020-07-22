@@ -1,0 +1,41 @@
+<div class="paymant-container">
+  <form [formGroup]="paymantForm">
+    <div>
+      <label>Card Number</label>
+      <input
+        [ngClass]="{ inputError: handleCardNumberError() }"
+        type="text"
+        formControlName="creditCardNumber"
+      />
+      <div class="errorMessage" *ngIf="handleCardNumberError()">
+        {{ handleCardNumberError() }}
+      </div>
+    </div>
+    <div>
+      <label>Card Holder</label>
+      <input type="text" formControlName="cardHolder" />
+      <div *ngIf="handleCardHolder()">{{ handleCardHolder() }}</div>
+    </div>
+    <div>
+      <label>Expiration Date</label>
+      <input
+        type="date"
+        [attr.min]="minDate"
+        formControlName="expirationDate"
+      />
+      <div *ngIf="handleExpirationDate()">{{ handleExpirationDate() }}</div>
+    </div>
+    <div>
+      <label>Security Code</label>
+      <input type="text" formControlName="securityCode" />
+      <div *ngIf="handleSecurityCode()">{{ handleSecurityCode() }}</div>
+    </div>
+    <div>
+      <label>Amount</label>
+      <input type="number" formControlName="amount" />
+      <div *ngIf="handleAmountError()">{{ handleAmountError() }}</div>
+    </div>
+
+    <button (click)="subtmitForm()">Submit</button>
+  </form>
+</div>

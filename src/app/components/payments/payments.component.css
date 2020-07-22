@@ -1,0 +1,12 @@
+.paymant-container {
+  display: flex;
+  justify-content: center;
+}
+
+.inputError {
+  border: red 1px solid;
+}
+
+.errorMessage {
+  color: blue;
+}
