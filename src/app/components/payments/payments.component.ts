@@ -7,22 +7,34 @@ import {
   FormControl,
 } from '@angular/forms';
 import { PaymentService } from '../../services/payment.service';
+import { ClassGetter } from '@angular/compiler/src/output/output_ast';
+import { ToastrService } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
 
+// Pentru a putea genera un component folosim comanda "ng generate component <numele-componentului>"
+// In decoratorul @Component avem un obiect cu trei valori importante, selector ne indica numele tag-ului cu care putem sa accesam acest component in html, template sau templateUrl indica componentului ce html reprezinta si style sau styleUrls spre ce fisier sau fisiere css sa asculte.
 @Component({
   selector: 'app-payments',
   templateUrl: './payments.component.html',
   styleUrls: ['./payments.component.css'],
 })
+
+// aici exportam clasa de interes, in ea setam metode sau variabile. OnInit este un lifecycle hook, si este apelat dupa ce Angular a initializat datele.
 export class PaymentsComponent implements OnInit {
   paymantForm: FormGroup;
   minDate: string;
+  paymantSubscribe: Subscription;
 
+  // Constructorul este o functie care se apeleaza la initializarea aplicatiei
   constructor(
     private formBuilder: FormBuilder,
-    private paymentService: PaymentService
+    private paymentService: PaymentService,
+    private tostr: ToastrService
   ) {}
 
+  //metoda ngOnInit() este apelata inainte ca orice component sa fie afisat, aceasta este invocata o singura data.
   ngOnInit(): void {
+    // variabila paymantForm care este de tipul FormGroup este definita de catre formBuilder.group(), valorile atribuite lui paymantForm sunt cele din interfata, acestora li se atribuie valoarea initiala si Validatorii pe care trebuie sa ii respecte
     this.paymantForm = this.formBuilder.group({
       creditCardNumber: [
         '',
@@ -44,22 +56,20 @@ export class PaymentsComponent implements OnInit {
     this.dinamicDate();
   }
 
+  // Aceasta metoda ne returneaza dinamic ziua si anul curent, si o seteaza in input-ul de type="date" pentru a nu putea selecta in calendar o data mai mica de ziua curenta.
   dinamicDate() {
     const today = new Date();
-    let dd: any = today.getDate();
-    let mm: any = today.getMonth() + 1;
+    let mm: number = today.getMonth() + 1;
     const yy = today.getFullYear();
-    if (dd < 10) {
-      dd = '0' + dd;
-    }
-
     if (mm < 10) {
-      mm = '0' + mm;
+      this.minDate = yy + '-0' + mm;
+    } else {
+      this.minDate = yy + '-' + mm;
     }
-
-    this.minDate = yy + '-' + mm + '-' + dd;
+    console.log(this.minDate);
   }
 
+  // metodele handleError de mai jos ne verifica daca valorile din input-uri se potrivesc cu validatorii setati in metoda ngOnInit, daca acestea nu sunt corecte ne returneaza un string cu eroarea acesta fiind trimis in html.
   handleCardNumberError(): string {
     if (
       this.paymantForm.get('creditCardNumber').hasError('required') &&
@@ -91,7 +101,7 @@ export class PaymentsComponent implements OnInit {
       this.paymantForm.get('securityCode').hasError('maxlength') ||
       this.paymantForm.get('securityCode').hasError('minlength')
     ) {
-      return 'Te rog sa introduci 3 cifre pentru codul de securitate';
+      return 'Te rog sa introduci 3 cifre';
     } else {
       return '';
     }
@@ -119,6 +129,7 @@ export class PaymentsComponent implements OnInit {
     }
   }
 
+  // Metoda submitForm() verifica in prima faza daca toate inputurile sunt "atinse", astfel sa impiedice sa trimita catre server un obiect gol.
   subtmitForm() {
     this.paymantForm.markAllAsTouched();
 
@@ -131,14 +142,32 @@ export class PaymentsComponent implements OnInit {
         amount: this.paymantForm.get('amount').value,
       };
 
-      this.paymentService.submitPayment(body).subscribe(
-        (data) => {
-          console.log(data);
+      this.paymantSubscribe = this.paymentService.submitPayment(body).subscribe(
+        (res) => {
+          // resetare form dupa primirea raspunsului
+          this.paymantForm.get('creditCardNumber').setValue('');
+          this.paymantForm.get('cardHolder').setValue('');
+          this.paymantForm.get('expirationDate').setValue(undefined);
+          this.paymantForm.get('securityCode').setValue('');
+          this.paymantForm.get('amount').setValue(undefined);
+
+          this.paymantForm.markAsUntouched();
+          this.tostr.success(res.message);
         },
         (error) => {
-          console.error(error);
+          this.tostr.error(
+            error.error && error.error.message
+              ? error.error.message
+              : "The payment wasn't succesfull"
+          );
         }
       );
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.paymantSubscribe) {
+      this.paymantSubscribe.unsubscribe();
     }
   }
 }

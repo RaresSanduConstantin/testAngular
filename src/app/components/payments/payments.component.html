@@ -1,41 +1,74 @@
 <div class="paymant-container">
+  <!-- Un formGroup aduna toate valorile fiecarui "copil" de tip FormControl intr-un singur obiect, unde fiecare nume de control este cheie. Acest lucru are avantajul ca daca unul dintre input-uri nu este valid atunci intreg grupul nu este valid. -->
   <form [formGroup]="paymantForm">
-    <div>
-      <label>Card Number</label>
-      <input
-        [ngClass]="{ inputError: handleCardNumberError() }"
-        type="text"
-        formControlName="creditCardNumber"
-      />
-      <div class="errorMessage" *ngIf="handleCardNumberError()">
-        {{ handleCardNumberError() }}
+    <div class="form-container">
+      <div class="input-container">
+        <label>Card Number</label>
+        <!-- In momentul in care functia handleCardNumberError() este valida, cu ajutorul ngClass-ului putem sa setam in acel moment o clasa pentru input, in acest caz clasa inputError pentru a ne ajuta in UI sa vedem ce camp nu este completat corespunzator -->
+        <input
+          [ngClass]="{ inputError: handleCardNumberError() }"
+          type="text"
+          formControlName="creditCardNumber"
+          placeholder="4242-4242-4242-4242"
+          maxlength="16"
+        />
+        <!-- Atunci cand functia handleCardNumberError() este valida, *ngIf verifica acest lucru si o apeleaza, functia ne returneaza un string in care este explicata eroare -->
+        <div class="errorMessage" *ngIf="handleCardNumberError()">
+          {{ handleCardNumberError() }}
+        </div>
       </div>
-    </div>
-    <div>
-      <label>Card Holder</label>
-      <input type="text" formControlName="cardHolder" />
-      <div *ngIf="handleCardHolder()">{{ handleCardHolder() }}</div>
-    </div>
-    <div>
-      <label>Expiration Date</label>
-      <input
-        type="date"
-        [attr.min]="minDate"
-        formControlName="expirationDate"
-      />
-      <div *ngIf="handleExpirationDate()">{{ handleExpirationDate() }}</div>
-    </div>
-    <div>
-      <label>Security Code</label>
-      <input type="text" formControlName="securityCode" />
-      <div *ngIf="handleSecurityCode()">{{ handleSecurityCode() }}</div>
-    </div>
-    <div>
-      <label>Amount</label>
-      <input type="number" formControlName="amount" />
-      <div *ngIf="handleAmountError()">{{ handleAmountError() }}</div>
-    </div>
+      <div class="input-container">
+        <label>Card Holder</label>
 
-    <button (click)="subtmitForm()">Submit</button>
+        <input
+          [ngClass]="{ inputError: handleCardHolder() }"
+          type="text"
+          formControlName="cardHolder"
+          placeholder="John Doe"
+        />
+        <div class="errorMessage" *ngIf="handleCardHolder()">
+          {{ handleCardHolder() }}
+        </div>
+      </div>
+      <div class="input-container">
+        <label>Expiration Date</label>
+        <input
+          [ngClass]="{ inputError: handleExpirationDate() }"
+          type="month"
+          [attr.min]="minDate"
+          formControlName="expirationDate"
+        />
+        <div class="errorMessage" *ngIf="handleExpirationDate()">
+          {{ handleExpirationDate() }}
+        </div>
+      </div>
+      <div class="input-container">
+        <label>Security Code</label>
+        <input
+          [ngClass]="{ inputError: handleSecurityCode() }"
+          type="text"
+          formControlName="securityCode"
+          placeholder="123"
+          maxlength="3"
+        />
+        <div class="errorMessage" *ngIf="handleSecurityCode()">
+          {{ handleSecurityCode() }}
+        </div>
+      </div>
+      <div class="input-container">
+        <label>Amount</label>
+        <input
+          [ngClass]="{ inputError: handleAmountError() }"
+          type="number"
+          formControlName="amount"
+          placeholder="300"
+        />
+        <div class="errorMessage" *ngIf="handleAmountError()">
+          {{ handleAmountError() }}
+        </div>
+      </div>
+      <!-- Angular ne oferta avantajul de a accesa evenimente mult mai usor, functia integrata (click) apeleaza motoda submitForm() in momentul in care facem click pe buttonul Submit -->
+      <button (click)="subtmitForm()">Submit</button>
+    </div>
   </form>
 </div>

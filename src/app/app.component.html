@@ -3,5 +3,6 @@
     <a class="link" routerLink="/">Home Page</a>
     <a class="link" routerLink="/paymant">Paymant Page</a>
   </nav>
+  <!-- Pentru a putea face aplicatii single-page este nevoie de o navigatie, pentru a putea folosi routing-ul integrat din angular trebuie sa instalam comanda "ng new routing-app --routing", si sa importam in app.module.ts pachetele de routing "AppRoutingModule", ulterior putem sa setam cu ajutorul "routerLink"-ului componentele in care dorim sa navigam, pentru a putea accesa rutele trebuie sa includem in app.component.html componenta "<router-outlet>", acest element informeaza Angular ce componente sa afiseze, precizate prin routes. -->
   <router-outlet></router-outlet>
 </div>

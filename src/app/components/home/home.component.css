@@ -1,0 +1,15 @@
+.container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+.column {
+  position: relative;
+  width: 60%;
+  margin: 2em;
+  font-size: 1.2em;
+}
