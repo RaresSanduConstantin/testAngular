@@ -151,11 +151,15 @@ export class PaymentsComponent implements OnInit {
           this.paymantForm.get('securityCode').setValue('');
           this.paymantForm.get('amount').setValue(undefined);
 
+          //  marcarea inputurilor ca untouched dupa primirea raspunsului cu succes
           this.paymantForm.markAsUntouched();
+          // Am folosit pachetul toastr, care a fost instalat cu comanda "ngx-toastr" urmat apoi de importarea acestuia in app.module.ts si angular.json. Raspunsul cu succes este primit de la server.
           this.tostr.success(res.message);
         },
         (error) => {
+          // Daca raspunsul nu este primit apare o eroare de la server, aceasta eroare este prinsa si folosind tostr o putem afisa in UI.
           this.tostr.error(
+            // Daca exista eroarea si exista si mesajul erorii atunci sa se afiseze mesajul erorii daca nu sa se afiseze stringul de mai jos
             error.error && error.error.message
               ? error.error.message
               : "The payment wasn't succesfull"
@@ -164,7 +168,7 @@ export class PaymentsComponent implements OnInit {
       );
     }
   }
-
+  // Pentru a distruge componenta folosim metoda ngOnDsetroy(), in care verificat daca variabila patmantSubscribe exista, si daca da ii spunem sa faca unsubscribe.
   ngOnDestroy() {
     if (this.paymantSubscribe) {
       this.paymantSubscribe.unsubscribe();
